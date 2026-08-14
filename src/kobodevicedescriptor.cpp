@@ -19,7 +19,7 @@ KoboDeviceDescriptor KoboTrilogyC = {
     .device = KoboTouchC,
     .mark = 4,
     .dpi = 200,
-    .touchscreenSettings= {.swapXY = false, .hasMultitouch = false},
+    .touchscreenSettings = {.swapXY = false, .hasMultitouch = false},
 };
 
 // Kobo Mini:
@@ -27,7 +27,7 @@ KoboDeviceDescriptor KoboPixie = {
     .device = KoboMini,
     .mark = 4,
     .dpi = 200,
-    .touchscreenSettings= {.hasMultitouch = false},
+    .touchscreenSettings = {.hasMultitouch = false},
 };
 
 // Kobo Glo:
@@ -35,7 +35,7 @@ KoboDeviceDescriptor KoboKraken = {
     .device = KoboGlo,
     .mark = 4,
     .dpi = 212,
-    .touchscreenSettings= {.hasMultitouch = false},
+    .touchscreenSettings = {.hasMultitouch = false},
 };
 
 // Kobo Glo HD:
@@ -66,7 +66,7 @@ KoboDeviceDescriptor KoboDragon = {
     .device = KoboAuraHD,
     .mark = 4,
     .dpi = 265,
-    .touchscreenSettings= {.hasMultitouch = false},
+    .touchscreenSettings = {.hasMultitouch = false},
 };
 
 // Kobo Aura H2O:
@@ -193,7 +193,22 @@ KoboDeviceDescriptor KoboGoldfinch = {
     .hasGSensor = true,
 };
 
-static QString exec(const char *cmd)
+KoboDeviceDescriptor KoboMonza = {
+    .device = KoboLibraColour,
+    .mark = 13,
+    .dpi = 300,
+    .touchscreenSettings{ .invertX = false, .invertY = true},
+    .hasReliableMxcWaitFor = false,
+};
+
+KoboDeviceDescriptor KoboSpa = {
+    .device = KoboClaraColour,
+    .mark = 12,
+    .dpi = 300,
+    .hasReliableMxcWaitFor = false,
+};
+
+static QString exec(const char* cmd)
 {
     std::array<char, 128> buffer;
     QString result;
@@ -209,7 +224,7 @@ static QString exec(const char *cmd)
     return result.trimmed();
 }
 
-static QRect determineGeometry(const fb_var_screeninfo &vinfo)
+static QRect determineGeometry(const fb_var_screeninfo& vinfo)
 {
     int xoff = vinfo.xoffset;
     int yoff = vinfo.yoffset;
@@ -218,7 +233,7 @@ static QRect determineGeometry(const fb_var_screeninfo &vinfo)
     return QRect(xoff, yoff, w, h);
 }
 
-static QSizeF determinePhysicalSize(const fb_var_screeninfo &vinfo, const QSize &res, int dpi = 300)
+static QSizeF determinePhysicalSize(const fb_var_screeninfo& vinfo, const QSize& res, int dpi = 300)
 {
     int mmWidth = 0, mmHeight = 0;
 
@@ -236,13 +251,15 @@ static QSizeF determinePhysicalSize(const fb_var_screeninfo &vinfo, const QSize 
     return QSize(mmWidth, mmHeight);
 }
 
-KoboDeviceDescriptor determineDevice()
+KoboDeviceDescriptor determineDeviceMinimal()
 {
     QString deviceName;
-    if(QFile::exists("/bin/kobo_config.sh")) {
+    if (QFile::exists("/bin/kobo_config.sh"))
+    {
         deviceName = exec("/bin/kobo_config.sh 2>/dev/null");
     }
-    else {
+    else
+    {
         deviceName = std::getenv("DEVICE_CODENAME");
     }
     auto modelNumberStr = exec("cut -f 6 -d ',' /mnt/onboard/.kobo/version | sed -e 's/^[0-]*//'");
@@ -334,11 +351,27 @@ KoboDeviceDescriptor determineDevice()
     {
         device = KoboGoldfinch;
     }
-    else // Why is it the last in else only?...
+    else if (deviceName == "monza")
+    {
+        device = KoboMonza;
+    }
+    else if (deviceName == "spa")
+    {
+        device = KoboSpa;
+    }
+    else  // Why is it the last in else only?...
     {
         device = KoboTrilogyC;
     }
+    device.modelName = deviceName;
+    device.modelNumber = modelNumber;
+    return device;
+}
 
+KoboDeviceDescriptor determineDevice()
+{
+    KoboDeviceDescriptor device = determineDeviceMinimal();
+    qDebug() << "Found device:" << device.modelName;
     QString fbDevice = QLatin1String("/dev/fb0");
     if (!QFile::exists(fbDevice))
         fbDevice = QLatin1String("/dev/graphics/fb0");
@@ -382,10 +415,6 @@ KoboDeviceDescriptor determineDevice()
     device.physicalWidth = mPhysicalSize.width();
     device.physicalHeight = mPhysicalSize.height();
 
-    device.modelName = deviceName;
-    device.modelNumber = modelNumber;
-
     close(mFbFd);
-
     return device;
 }

@@ -28,7 +28,9 @@ enum KoboDevice
     KoboElipsa,
     KoboSage,
     KoboLibra2,
-    KoboClara2E
+    KoboClara2E,
+    KoboLibraColour,
+    KoboClaraColour
 };
 
 struct TouchscreenSettings
@@ -70,5 +72,6 @@ struct KoboDeviceDescriptor
 };
 
 KoboDeviceDescriptor determineDevice();
+KoboDeviceDescriptor determineDeviceMinimal();
 
 #endif  // KOBODEVICEDESCRIPTOR_H

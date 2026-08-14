@@ -61,18 +61,18 @@ Q_LOGGING_CATEGORY(qLcEvdevTouch2, "qt.qpa.input")
 #define LONG_BITS (sizeof(long) << 3)
 #define NUM_LONGS(bits) (((bits) + LONG_BITS - 1) / LONG_BITS)
 
-static inline bool testBit(long bit, const long *array)
+static inline bool testBit(long bit, const long* array)
 {
     return (array[bit / LONG_BITS] >> bit % LONG_BITS) & 1;
 }
 
-QEvdevTouchScreenHandler::QEvdevTouchScreenHandler(const QString &device, const QString &spec,
-                                                   QObject *parent, KoboFbScreen *koboFbScreen)
+QEvdevTouchScreenHandler::QEvdevTouchScreenHandler(const QString& device, const QString& spec,
+                                                   QObject* parent, KoboFbScreen* koboFbScreen)
     : QObject(parent), m_notify(nullptr), m_fd(-1), d(nullptr), m_device(nullptr)
 {
     setObjectName(QLatin1String("Evdev Touch Handler"));
 
-    qCDebug(qLcEvdevTouch2) << "spec: " <<spec;
+    qCDebug(qLcEvdevTouch2) << "spec: " << spec;
 
     const QStringList args = spec.split(QLatin1Char(':'));
     bool experimentaltouchdhandler = false;
@@ -168,8 +168,7 @@ QEvdevTouchScreenHandler::QEvdevTouchScreenHandler(const QString &device, const 
         return;
     }
 
-
-    if(!experimentaltouchdhandler)
+    if (!experimentaltouchdhandler)
         d = new QEvdevTouchScreenData(this, args);
     else
         d = new QEvdevTouchScreenData2(this, args, koboFbScreen);
@@ -247,9 +246,9 @@ QEvdevTouchScreenHandler::QEvdevTouchScreenHandler(const QString &device, const 
         qCDebug(qLcEvdevTouch2, "evdevtouch: %ls: device name: %s", qUtf16Printable(device), name);
     }
 
-    bool grabSuccess = !ioctl(m_fd, EVIOCGRAB, (void *)1);
+    bool grabSuccess = !ioctl(m_fd, EVIOCGRAB, (void*)1);
     if (grabSuccess)
-        ioctl(m_fd, EVIOCGRAB, (void *)0);
+        ioctl(m_fd, EVIOCGRAB, (void*)0);
     else
         qDebug("evdevtouch: The device is grabbed by another process. No events will be read.");
 
@@ -271,7 +270,7 @@ bool QEvdevTouchScreenHandler::isFiltered() const
     return d && d->m_filtered;
 }
 
-QTouchDevice *QEvdevTouchScreenHandler::touchDevice() const
+QTouchDevice* QEvdevTouchScreenHandler::touchDevice() const
 {
     return m_device;
 }
@@ -284,7 +283,7 @@ void QEvdevTouchScreenHandler::readData()
     int n = 0;
     for (;;)
     {
-        events = QT_READ(m_fd, reinterpret_cast<char *>(buffer) + n, sizeof(buffer) - n);
+        events = QT_READ(m_fd, reinterpret_cast<char*>(buffer) + n, sizeof(buffer) - n);
         if (events <= 0)
             goto err;
         n += events;

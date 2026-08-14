@@ -94,6 +94,10 @@ QEvdevTouchManager::QEvdevTouchManager(const QString &key, const QString &specif
         for (const QString &device : devices) {
             addDevice(device);
         }
+        const KoboDevice device = determineDeviceMinimal().device;
+        if (device == KoboClaraColour || device == KoboLibraColour) {
+            addDevice("/dev/input/event1");
+        }
 
         connect(deviceDiscovery, &QDeviceDiscovery::deviceDetected, this, &QEvdevTouchManager::addDevice);
         connect(deviceDiscovery, &QDeviceDiscovery::deviceRemoved, this,
