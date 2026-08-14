@@ -197,7 +197,7 @@ KoboDeviceDescriptor KoboMonza = {
     .device = KoboLibraColour,
     .mark = 13,
     .dpi = 300,
-    .touchscreenSettings{ .invertX = false, .invertY = true},
+    .touchscreenSettings{.invertX = false, .invertY = true},
     .hasReliableMxcWaitFor = false,
 };
 
