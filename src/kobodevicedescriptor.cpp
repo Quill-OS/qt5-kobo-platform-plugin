@@ -201,7 +201,7 @@ KoboDeviceDescriptor KoboMonza = {
     .hasReliableMxcWaitFor = false,
 };
 
-KoboDeviceDescriptor KoboSpa = {
+KoboDeviceDescriptor KoboSpaColour = {
     .device = KoboClaraColour,
     .mark = 12,
     .dpi = 300,
@@ -355,9 +355,9 @@ KoboDeviceDescriptor determineDeviceMinimal()
     {
         device = KoboMonza;
     }
-    else if (deviceName == "spa")
+    else if (deviceName == "spaColour")
     {
-        device = KoboSpa;
+        device = KoboSpaColour;
     }
     else  // Why is it the last in else only?...
     {
